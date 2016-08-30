@@ -43,11 +43,11 @@ class Request
         if(static::$_main == null) {
             static::$_main = new static(
                 $_SERVER["REQUEST_URI"],
-                $_GET,
-                $_POST,
-                $_COOKIES,
-                $_FILES,
-                $_SERVER
+                ($_GET ?? []),
+                ($_POST ?? []),
+                ($_COOKIES ?? []),
+                ($_FILES ?? []),
+                ($_SERVER ?? [])
             );
         }
 
@@ -152,5 +152,15 @@ class Request
         }
 
         $this->method = $this->server["REQUEST_METHOD"];
+    }
+
+    /**
+     * Returns the URI as an array.
+     *
+     * @return array `$this->uri` as array.
+     */
+    public function uri() : array
+    {
+        return explode("/", $this->uri);
     }
 }
