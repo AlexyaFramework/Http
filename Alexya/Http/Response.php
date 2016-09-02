@@ -170,7 +170,7 @@ class Response
      * @param string     $body    Response body.
      * @param int|string $status  Status code.
      */
-    public function __construct(array $headers = [], string $body = "", $status)
+    public function __construct(array $headers = [], string $body = "", $status = 200)
     {
         $this->_headers = $headers;
         $this->_body    = $body;
