@@ -5,7 +5,7 @@ namespace Alexya\Http;
  * Request class.
  *
  * This class is a wrapper for the request
- * superglobals that PHP offers.
+ * super-globals that PHP offers.
  *
  * The main request is the request that was sent to the
  * server and you can retrieve it by using the method `main`.
@@ -31,16 +31,21 @@ class Request
      *
      * @var Request
      */
-    private static $_main;
+    protected static $_main;
 
     /**
      * Returns main request.
      *
-     * @return \Alexya\Http\Request Main request.
+     * @param bool $refreshCache `true` to refresh cached instance (default `false`).
+     *
+     * @return Request Main request.
      */
-    public static function main() : Request
+    public static function main(bool $refreshCache = false) : Request
     {
-        if(static::$_main == null) {
+        if(
+            static::$_main === null ||
+            $refreshCache
+        ) {
             static::$_main = new static(
                 $_SERVER["REQUEST_URI"],
                 ($_GET ?? []),
@@ -94,6 +99,13 @@ class Request
     public $post = [];
 
     /**
+     * PUT parameters.
+     *
+     * @var array
+     */
+    public $put = [];
+
+    /**
      * COOKIES parameters.
      *
      * @var array
@@ -115,14 +127,14 @@ class Request
     public $server = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param string $uri     Requested URI
-     * @param array  $get     The GET parameters
-     * @param array  $post    The POST parameters
-     * @param array  $cookies The COOKIE parameters
-     * @param array  $files   The FILES parameters
-     * @param array  $server  The SERVER parameters
+     * @param string $uri     Requested URI.
+     * @param array  $get     The GET parameters.
+     * @param array  $post    The POST parameters.
+     * @param array  $cookies The COOKIE parameters.
+     * @param array  $files   The FILES parameters.
+     * @param array  $server  The SERVER parameters.
      */
     public function __construct(string $uri = "/", array $get = [], array $post = [], array $cookies = [], array $files = [], array $server = [])
     {
@@ -132,9 +144,25 @@ class Request
         $this->cookies = $cookies;
         $this->files   = $files;
         $this->server  = $server;
+        $this->headers = $this->getHeaders();
+        $this->method  = $this->server["REQUEST_METHOD"];
 
-        $this->headers = [];
-        foreach($server as $key => $value) {
+        if($this->method == "PUT") {
+            parse_str("php://input", $this->put);
+        }
+
+        $this->onInstance();
+    }
+
+    /**
+     * Returns request headers.
+     *
+     * @return array Request headers.
+     */
+    public function getHeaders() : array
+    {
+        $headers = [];
+        foreach($this->server as $key => $value) {
             $key = ucwords(
                 str_replace(
                     "_",
@@ -145,13 +173,23 @@ class Request
             );
 
             if(strpos($key, "Http-") === 0) {
-                $this->headers[substr($key, 5)] = $value;
+                $headers[substr($key, 5)] = $value;
             } else if(strpos($key, "Content-") !== false) {
-                $this->headers[$key] = $value;
+                $headers[$key] = $value;
             }
         }
 
-        $this->method = $this->server["REQUEST_METHOD"];
+        return $headers;
+    }
+
+    /**
+     * On instance method.
+     *
+     * Override it instead of the constructor.
+     */
+    public function onInstance()
+    {
+
     }
 
     /**
