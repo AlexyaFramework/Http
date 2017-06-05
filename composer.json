@@ -1,7 +1,7 @@
 {
     "name": "alexya-framework/http",
     "type": "framework",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "description": "Alexya's HTTP components",
     "keywords": ["php", "framework", "http", "php7", "alexya"],
     "license": "GNU",
