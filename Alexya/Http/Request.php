@@ -3,6 +3,7 @@ namespace Alexya\Http;
 
 /**
  * Request class.
+ * ==============
  *
  * This class is a wrapper for the request
  * super-globals that PHP offers.
@@ -187,7 +188,7 @@ class Request
      *
      * Override it instead of the constructor.
      */
-    public function onInstance()
+    public function onInstance() : void
     {
 
     }

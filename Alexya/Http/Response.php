@@ -3,6 +3,7 @@ namespace Alexya\Http;
 
 /**
  * Response class.
+ * ===============
  *
  * This class builds HTTP requests.
  *
@@ -121,11 +122,11 @@ class Response
     /**
      * Performs a redirect response.
      *
-     * @param string     $path   Where to redirect.
-     * @param string     $method Location or Refresh (default Location).
-     * @param int|string $code   Redirect code (default 301).
+     * @param string $path   Where to redirect.
+     * @param string $method Location or Refresh (default Location).
+     * @param int    $code   Redirect code (default 301).
      */
-    public static function redirect(string $path, string $method = "Location", int $code = 301)
+    public static function redirect(string $path, string $method = "Location", int $code = 301) : void
     {
         $response = new static();
         $method   = strtolower($method);
@@ -185,16 +186,13 @@ class Response
     /**
      * Adds a header.
      *
-     * @param string       $name  Header name.
-     * @param string|array $value Header value.
+     * @param string          $name  Header name.
+     * @param string|iterable $value Header value.
      */
-    public function header(string $name, $value)
+    public function header(string $name, $value) : void
     {
         if(is_array($value)) {
             $value = implode(", ", $value);
-        } else if(!is_string($value)) {
-            // Throw exception?
-            return;
         }
 
         $this->_headers[$name] = $value;
@@ -215,12 +213,11 @@ class Response
      *
      * @param int|string $status Status code
      */
-    public function status($status)
+    public function status($status) : void
     {
         if(is_int($status)) {
             $this->_status = $status;
-            return;
-        } else if(!is_string($status)) {
+
             return;
         }
 
@@ -238,7 +235,7 @@ class Response
     /**
      * Sends the response.
      */
-    public function send()
+    public function send() : void
     {
         if(!headers_sent()) {
             $this->_sendHeaders();
@@ -250,7 +247,7 @@ class Response
     /**
      * Sends headers.
      */
-    private function _sendHeaders()
+    private function _sendHeaders() : void
     {
         http_response_code($this->_status);
         foreach($this->_headers as $key => $value) {
